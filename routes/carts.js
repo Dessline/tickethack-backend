@@ -50,4 +50,14 @@ router.put("/all", (req, res) => {
     })
 })
 
+router.delete("/all", (req, res) => {
+    Cart.deleteMany()
+    .then(() => {
+        Cart.find({})
+        .then(data => {
+            res.json({ result : true, deletedTravels: data})
+        })
+    })
+})
+
 module.exports = router
