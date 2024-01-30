@@ -1,17 +1,19 @@
 var express = require("express")
 var router = express.Router()
 
-const User = require("../models/travels") 
+const Travel = require("../models/travels") 
 
 router.get('/', (req, res) => {
 
-    Travel.find({departure : req.body.departure}, {arrival : req.body.arrival}).then(data => {
-        if (data) {
-		return res.json({result :true, travels : data });
+    Travel.find({$and:[{departure : req.body.departure}, {arrival : req.body.arrival}, {date : req.body.date}]})
+    .then(data => {
+        console.log(data);
+        if (data.length > 0) {
+		return res.json({result : true, travels : data});
     
-        } else {
-        return res.json({result :false});
-        }
+       } else {
+       return res.json({result :false});
+      };
 
     });
     

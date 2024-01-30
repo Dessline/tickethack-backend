@@ -1,18 +1,18 @@
 var express = require("express")
 var router = express.Router()
 
-const User = require("../models/bookings") 
+const Booking = require("../models/bookings") 
 
 router.get('/', (req, res) => {
 
-    Booking.find({departure : { $regex: new RegExp(req.body.daparture, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date})
+    Booking.find({$and: [{departure : req.body.departure}, {arrival : req.body.arrival}, {date : req.body.date}]})
     .then(data => {
 
-        if (data) {
-		return res.json({result : true, ns : data });
+        if (data.length > 0) {
+		return res.json({result : true, bookings : data});
     
         } else {
-        return res.json({result :false});
+        return res.json({result : false});
         }
 
     });
@@ -23,43 +23,48 @@ router.get('/', (req, res) => {
 
 
 router.post('/', (req, res) => {
-	Booking.findOne({ departure : { $regex: new RegExp(req.body.daparture, 'i') } }, { arrival : { $regex: new RegExp(req.body.arrival, 'i') } }, {date : req.body.date}).then(data => {
+	Booking.findOne({$and:[{departure : req.body.departure}, {arrival : req.body.arrival}, {date : req.body.date}]}).then(data => {
 		if (data === null) {
             
 					const newBooking = new Booking({
-						departure: req.body.daparture,
+						departure: req.body.departure,
 	                    arrival: req.body.arrival,
-	                    date: eq.body.date,
-	                    price: eq.body.price,
+	                    date: req.body.date,
+	                    price: req.body.price,
+                        available: true,
 					});
 
 			
 					newBooking.save().then(newDoc => {
-						res.json({ result : true, cart : newDoc});
+						res.json({result : true, booking : newDoc});
 					});
                 } else {
                     // Booking already exists in database
-                    res.json({ result: false });
+                    res.json({result: false});
                 }
 		});
 
 		 
 	});
  
-router.get('/', (req, res) => {
+    router.put('/', (req, res) => {
 
-    Travel.find({departure : { $regex: new RegExp(req.body.daparture, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date})
-    .then(data => {
+            Booking.updateMany({$and: [{departure : { $regex: new RegExp(req.body.departure, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date}]}, {available : false})
+        .then(() => {
+            Booking.find({$and: [{departure : { $regex: new RegExp(req.body.departure, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date}]})
+            .then(data => {
 
-        if (data) {
-		return res.json({result : true, travels : data });
+                if (data.length > 0) {
+                    return res.json({result : true, travels : data });
+                
+                    } else {
+                    return res.json({result :false});
+                    }
+
+            }) 
     
-        } else {
-        return res.json({result :false});
-        }
-
+        });
+    
     });
-
-});
 
 module.exports = router
