@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     .then(data => {
 
         if (data) {
-		return res.json({result : true, bookings : data });
+		return res.json({result : true, ns : data });
     
         } else {
         return res.json({result :false});
@@ -35,7 +35,7 @@ router.post('/', (req, res) => {
 
 			
 					newBooking.save().then(newDoc => {
-						res.json({ result : true, booking : newDoc});
+						res.json({ result : true, cart : newDoc});
 					});
                 } else {
                     // Booking already exists in database
@@ -46,6 +46,20 @@ router.post('/', (req, res) => {
 		 
 	});
  
+router.get('/', (req, res) => {
 
+    Travel.find({departure : { $regex: new RegExp(req.body.daparture, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date})
+    .then(data => {
+
+        if (data) {
+		return res.json({result : true, travels : data });
+    
+        } else {
+        return res.json({result :false});
+        }
+
+    });
+
+});
 
 module.exports = router
