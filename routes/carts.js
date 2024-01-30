@@ -33,7 +33,7 @@ router.put("/", (req, res) => {
     Cart.updateOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},
         {date: req.body.date},{price : req.body.price}]}, {availaible: false})
     .then(() => {
-        Cart.findOne({departure: req.body.departure},{arrival: req.body.arrival},{date: req.body.date},{price : req.body.price})
+        Cart.findOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},{date: req.body.date},{price : req.body.price}]})
         .then(data => {
             res.json({ result : true, deletedTravel: data})
         })
