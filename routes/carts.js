@@ -21,7 +21,7 @@ router.post("/", (req, res) => {
 })
 
 router.get("/", (req, res) => {
-    Cart.find({available: true}).then(data => {
+    Cart.find({available: true}).populate("travel").then(data => {
         res.json({ result: true, cart: data})
     })
 })

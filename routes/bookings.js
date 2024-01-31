@@ -5,7 +5,7 @@ const Booking = require("../models/bookings")
 
 router.get('/', (req, res) => {
 
-    Booking.find({available: true})
+    Booking.find({available: true}).populate("travel")
     .then(data => {
         if (data.length > 0) {
 		    return res.json({result : true, bookings : data});
