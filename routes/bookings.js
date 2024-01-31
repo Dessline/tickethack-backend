@@ -5,7 +5,7 @@ const Booking = require("../models/bookings")
 
 router.get('/', (req, res) => {
 
-    Booking.find({$and: [{departure : req.body.departure}, {arrival : req.body.arrival}, {date : req.body.date}]})
+    Booking.find({available: true})
     .then(data => {
 
         if (data.length > 0) {
