@@ -3,16 +3,13 @@ var router = express.Router();
 const Cart = require('../models/carts');
 
 router.post("/", (req, res) => {
-    Cart.findOne({departure: req.body.departure},{arrival: req.body.arrival},
-        {date: req.body.date},{price : req.body.price})
+    Cart.findOne({travel: req.body.travel})
         .then(dbData => {
+            console.log(dbData)
             if (dbData === null) {
                 const newCart = new Cart ({
-                    departure: req.body.departure,
-                    arrival: req.body.arrival,
-                    date: req.body.date,
-                    price: req.body.price,
-                    availaible: true
+                    travel: req.body.travel,
+                    available: true,
                 })
                 newCart.save().then(newDoc => {
                     res.json({ result: true, newTravel: newDoc })
@@ -24,16 +21,15 @@ router.post("/", (req, res) => {
 })
 
 router.get("/", (req, res) => {
-    Cart.find().then(data => {
+    Cart.find({available: true}).then(data => {
         res.json({ result: true, cart: data})
     })
 })
 
 router.put("/", (req, res) => {
-    Cart.updateOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},
-        {date: req.body.date},{price : req.body.price}]}, {availaible: false})
+    Cart.updateOne({travel: req.body.travel}, {available: false})
     .then(() => {
-        Cart.findOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},{date: req.body.date},{price : req.body.price}]})
+        Cart.findOne({travel: req.body.travel})
         .then(data => {
             res.json({ result : true, deletedTravel: data})
         })
@@ -41,7 +37,7 @@ router.put("/", (req, res) => {
 })
 
 router.put("/all", (req, res) => {
-    Cart.updateMany({}, {availaible: false})
+    Cart.updateMany({}, {available: false})
     .then(() => {
         Cart.find({})
         .then(data => {
