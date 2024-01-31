@@ -5,36 +5,25 @@ const Booking = require("../models/bookings")
 
 router.get('/', (req, res) => {
 
-    Booking.find({available: true})
+    Booking.find({available: true}).populate("travel")
     .then(data => {
-
         if (data.length > 0) {
-		return res.json({result : true, bookings : data});
-    
+		    return res.json({result : true, bookings : data});
         } else {
-        return res.json({result : false});
+            return res.json({result : false});
         }
-
     });
-
-
-    
 });
 
 
 router.post('/', (req, res) => {
-	Booking.findOne({$and:[{departure : req.body.departure}, {arrival : req.body.arrival}, {date : req.body.date}]}).then(data => {
+	Booking.findOne({travel: req.body.travel})
+    .then(data => {
 		if (data === null) {
-            
 					const newBooking = new Booking({
-						departure: req.body.departure,
-	                    arrival: req.body.arrival,
-	                    date: req.body.date,
-	                    price: req.body.price,
+						travel : req.body.travel,
                         available: true,
 					});
-
-			
 					newBooking.save().then(newDoc => {
 						res.json({result : true, booking : newDoc});
 					});
@@ -43,28 +32,21 @@ router.post('/', (req, res) => {
                     res.json({result: false});
                 }
 		});
-
-		 
 	});
  
-    router.put('/', (req, res) => {
+router.put('/', (req, res) => {
 
-            Booking.updateMany({$and: [{departure : { $regex: new RegExp(req.body.departure, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date}]}, {available : false})
+    Booking.updateMany({}, {available : false})
         .then(() => {
-            Booking.find({$and: [{departure : { $regex: new RegExp(req.body.departure, 'i') }}, {arrival : { $regex: new RegExp(req.body.arrival, 'i') }}, {date : req.body.date}]})
+            Booking.find()
             .then(data => {
-
                 if (data.length > 0) {
                     return res.json({result : true, travels : data });
-                
-                    } else {
+                } else {
                     return res.json({result :false});
-                    }
-
+                }
             }) 
-    
         });
-    
     });
 
 module.exports = router

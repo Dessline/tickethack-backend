@@ -3,16 +3,13 @@ var router = express.Router();
 const Cart = require('../models/carts');
 
 router.post("/", (req, res) => {
-    Cart.findOne({departure: req.body.departure},{arrival: req.body.arrival},
-        {date: req.body.date},{price : req.body.price})
+    Cart.findOne({travel: req.body.travel})
         .then(dbData => {
+            console.log(dbData)
             if (dbData === null) {
                 const newCart = new Cart ({
-                    departure: req.body.departure,
-                    arrival: req.body.arrival,
-                    date: req.body.date,
-                    price: req.body.price,
-                    available: true
+                    travel: req.body.travel,
+                    available: true,
                 })
                 newCart.save().then(newDoc => {
                     res.json({ result: true, newTravel: newDoc })
@@ -34,10 +31,9 @@ router.get("/", (req, res) => {
 })
 
 router.put("/", (req, res) => {
-    Cart.updateOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},
-        {date: req.body.date},{price : req.body.price}]}, {available: false})
+    Cart.updateOne({travel: req.body.travel}, {available: false})
     .then(() => {
-        Cart.findOne({ $and: [{departure: req.body.departure},{arrival: req.body.arrival},{date: req.body.date},{price : req.body.price}]})
+        Cart.findOne({travel: req.body.travel})
         .then(data => {
             res.json({ result : true, deletedTravel: data})
         })

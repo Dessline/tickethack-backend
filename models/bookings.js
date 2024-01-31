@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = mongoose.Schema({
-	departure: String,
-	arrival: String,
-	date: Date,
-	price: Number,
+	travel: { type: mongoose.Schema.Types.ObjectId, ref: 'travels' },
 	available: Boolean,
 });
 
