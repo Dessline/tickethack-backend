@@ -34,6 +34,7 @@ router.put("/", (req, res) => {
     Cart.updateOne({travel: req.body.travel}, {available: false})
     .then(() => {
         Cart.findOne({travel: req.body.travel})
+        .populate('travel')
         .then(data => {
             res.json({ result : true, deletedTravel: data})
         })
